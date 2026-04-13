@@ -1,3 +1,5 @@
+type DockerContainerAction = "start" | "stop" | "restart"
+
 interface User {
   id: string
   name: string
@@ -18,8 +20,6 @@ interface DockerRequestOptions {
   path: string
   method?: "GET" | "POST" | "PUT" | "DELETE"
 }
-
-type DockerContainerAction = "start" | "stop" | "restart"
 
 interface DockerContainerInfo {
   id: string
@@ -44,5 +44,29 @@ interface DockerSnapshot {
     containersRunning: number
     containersExited: number
     imagesTotal: number
+  }
+}
+
+interface DockerSnapshotResponse {
+  snapshot: {
+    serverVersion: string
+    containers: Array<{
+      id: string
+      name: string
+      image: string
+      state: string
+      status: string
+    }>
+    images: Array<{
+      id: string
+      tags: string[]
+      size: number
+    }>
+    stats: {
+      containersTotal: number
+      containersRunning: number
+      containersExited: number
+      imagesTotal: number
+    }
   }
 }

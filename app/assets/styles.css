@@ -17,7 +17,7 @@
   --input: #e7e4e4;
   --muted: #e1e1e1;
   --muted-foreground: #707070;
-  --primary: #56cb82;
+  --primary: #d80808;
   --secondary: #2a3643;
   --danger: #8d2525;
   --danger-foreground: #daa0a0;
@@ -36,7 +36,7 @@ html.dark {
   --input: #1a1a1a;
   --muted: #242424;
   --muted-foreground: #9b9b9b;
-  --primary: #56cb82;
+  --primary: #d80808;
   --secondary: #2a3643;
   --danger: #8d2525;
   --danger-foreground: #daa0a0;
@@ -198,6 +198,17 @@ select {
   font-size: 0.875rem;
   width: 100%;
   transition: all var(--transition);
+}
+
+input[type="checkbox"],
+input[type="radio"] {
+  appearance: auto;
+  width: auto;
+  padding: 0;
+  background-color: transparent;
+  border: none;
+  border-radius: 0;
+  accent-color: var(--primary);
 }
 
 /*
