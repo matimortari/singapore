@@ -1,0 +1,39 @@
+{
+  "name": "my-nuxt-app",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "nuxt dev",
+    "build": "nuxt build",
+    "nuxt:prepare": "nuxt prepare",
+    "postinstall": "prisma generate && nuxt prepare",
+    "typecheck": "nuxt typecheck",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "db:generate": "prisma generate",
+    "db:push": "prisma db push",
+    "db:migrate": "prisma migrate dev"
+  },
+  "dependencies": {
+    "@nuxtjs/color-mode": "4.0.0",
+    "@nuxtjs/seo": "4.0.2",
+    "@pinia/nuxt": "0.11.3",
+    "@prisma/adapter-pg": "7.5.0",
+    "@prisma/client": "7.5.0",
+    "nuxt": "4.4.2",
+    "nuxt-auth-utils": "0.5.29",
+    "pg": "8.20.0"
+  },
+  "devDependencies": {
+    "@antfu/eslint-config": "7.7.0",
+    "@nuxt/fonts": "0.14.0",
+    "@nuxt/icon": "2.2.1",
+    "@tailwindcss/vite": "4.2.2",
+    "eslint": "10.1.0",
+    "eslint-plugin-better-tailwindcss": "4.3.0",
+    "eslint-plugin-format": "2.0.0",
+    "prisma": "7.5.0",
+    "tailwindcss": "4.2.2",
+    "typescript": "6.0.2"
+  }
+}
