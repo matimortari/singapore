@@ -1,5 +1,5 @@
 export const useDockerStore = defineStore("docker", () => {
-  const snapshot = ref<DockerSnapshotResponse["snapshot"] | null>(null)
+  const snapshot = ref<{ snapshot: DockerSnapshot }["snapshot"] | null>(null)
   const pending = ref(false)
   const pendingActionId = ref<string | null>(null)
   const errorMessage = ref("")
@@ -12,12 +12,12 @@ export const useDockerStore = defineStore("docker", () => {
     pending.value = true
 
     try {
-      const data = await $fetch<DockerSnapshotResponse>("/api/docker", { method: "GET", credentials: "include" })
+      const data = await $fetch<{ snapshot: DockerSnapshot }>("/api/docker", { method: "GET", credentials: "include" })
       snapshot.value = data.snapshot
       errorMessage.value = ""
     }
-    catch (error: any) {
-      errorMessage.value = error?.data?.message || error?.statusMessage || "Unable to fetch Docker data"
+    catch (err: unknown) {
+      errorMessage.value = (err as { data?: { message?: string }, statusMessage?: string })?.data?.message || (err as { statusMessage?: string })?.statusMessage || "Unable to fetch Docker data"
     }
     finally {
       pending.value = false
@@ -32,8 +32,8 @@ export const useDockerStore = defineStore("docker", () => {
       await $fetch(`/api/docker/container/${encodeURIComponent(containerId)}`, { method: "POST", credentials: "include", body: { action } })
       await refreshSnapshot()
     }
-    catch (error: any) {
-      errorMessage.value = error?.data?.message || error?.statusMessage || `Unable to ${action} container`
+    catch (err: unknown) {
+      errorMessage.value = (err as { data?: { message?: string }, statusMessage?: string })?.data?.message || (err as { statusMessage?: string })?.statusMessage || `Unable to ${action} container`
     }
     finally {
       pendingActionId.value = null

@@ -11,7 +11,7 @@ export const useUserStore = defineStore("user", () => {
       user.value = res.userData
       return res
     }
-    catch (err: any) {
+    catch (err: unknown) {
       const message = getErrorMessage(err, "Failed to get user")
       toast.error(message)
       console.error("getUser error:", err)
@@ -30,7 +30,7 @@ export const useUserStore = defineStore("user", () => {
       user.value = null
       toast.success("User deleted successfully")
     }
-    catch (err: any) {
+    catch (err: unknown) {
       const message = getErrorMessage(err, "Failed to delete user")
       toast.error(message)
       console.error("deleteUser error:", err)
