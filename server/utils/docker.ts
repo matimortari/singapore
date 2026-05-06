@@ -1,23 +1,39 @@
 import { Buffer } from "node:buffer"
 import { request } from "node:http"
 
-async function dockerRequest<T>({ path, method = "GET" }: DockerRequestOptions): Promise<T> {
-  const { dockerSocketPath } = useRuntimeConfig()
+function isHttpEndpoint(socketPath: string): boolean {
+  return socketPath.startsWith("http://") || socketPath.startsWith("https://")
+}
 
-  return await new Promise<T>((resolve, reject) => {
-    const req = request({ socketPath: dockerSocketPath, path, method }, (res) => {
+async function dockerRequestHttp<T>(baseUrl: string, path: string, method: string): Promise<T> {
+  const res = await fetch(`${baseUrl}${path}`, { method })
+  const body = await res.text()
+  if (!res.ok) {
+    throw new Error(`Docker API error (${res.status}): ${body || "No response body"}`)
+  }
+
+  try {
+    return body ? JSON.parse(body) as T : ({} as T)
+  }
+  catch {
+    throw new Error("Docker API returned non-JSON response")
+  }
+}
+
+async function dockerRequestSocket<T>(socketPath: string, path: string, method: string): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const req = request({ socketPath, path, method }, (res) => {
       const chunks: Uint8Array[] = []
 
       res.on("data", chunk => chunks.push(chunk))
       res.on("end", () => {
         const body = Buffer.concat(chunks).toString("utf8")
-
-        if ((res.statusCode || 500) >= 400) {
+        if ((res.statusCode ?? 500) >= 400) {
           return reject(new Error(`Docker API error (${res.statusCode}): ${body || "No response body"}`))
         }
 
         try {
-          resolve(body ? JSON.parse(body) : ({} as T))
+          resolve(body ? JSON.parse(body) as T : ({} as T))
         }
         catch {
           reject(new Error("Docker API returned non-JSON response"))
@@ -25,12 +41,15 @@ async function dockerRequest<T>({ path, method = "GET" }: DockerRequestOptions):
       })
     })
 
-    req.on("error", (error) => {
-      reject(error)
-    })
-
+    req.on("error", reject)
     req.end()
   })
+}
+
+async function dockerRequest<T>({ path, method = "GET" }: DockerRequestOptions): Promise<T> {
+  const { dockerSocketPath } = useRuntimeConfig()
+
+  return isHttpEndpoint(dockerSocketPath) ? dockerRequestHttp<T>(dockerSocketPath, path, method) : dockerRequestSocket<T>(dockerSocketPath, path, method)
 }
 
 export async function getDockerSnapshot(): Promise<DockerSnapshot> {
